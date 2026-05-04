@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://borderless-sat-prep.web.app/sitemap.xml
