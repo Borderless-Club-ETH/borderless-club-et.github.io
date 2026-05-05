@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Borderless SATPREP is an Ethiopian SAT prep club platform with gamified practice, AI tutoring, and Firebase-backed scoring." />
+    <title>Borderless SATPREP</title>
+    <style>
+      body {
+        margin: 0;
+        font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        background: radial-gradient(circle at top left, #4f46e5 0%, #0f172a 45%, #020617 100%);
+        color: #f8fafc;
+      }
+      .page {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 40px 20px;
+      }
+      .card {
+        max-width: 900px;
+        width: 100%;
+        border-radius: 32px;
+        background: rgba(15, 23, 42, 0.9);
+        box-shadow: 0 40px 120px rgba(15, 23, 42, 0.55);
+        border: 1px solid rgba(148, 163, 184, 0.16);
+        padding: 48px;
+      }
+      h1 {
+        margin: 0;
+        font-size: clamp(2.5rem, 5vw, 4rem);
+        line-height: 1.05;
+      }
+      .text-muted {
+        color: #cbd5e1;
+        font-size: 1rem;
+        line-height: 1.8;
+        margin: 24px 0;
+      }
+      .button-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 16px;
+        margin-top: 30px;
+      }
+      .button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 180px;
+        padding: 16px 24px;
+        border-radius: 999px;
+        text-decoration: none;
+        font-weight: 700;
+        transition: transform 0.2s ease, background 0.2s ease;
+      }
+      .button-primary {
+        background: linear-gradient(135deg, #6366f1, #ec4899);
+        color: #ffffff;
+      }
+      .button-secondary {
+        background: rgba(148, 163, 184, 0.14);
+        color: #e2e8f0;
+        border: 1px solid rgba(148, 163, 184, 0.2);
+      }
+      .button:hover {
+        transform: translateY(-2px);
+      }
+      .features {
+        display: grid;
+        gap: 16px;
+        margin-top: 36px;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      }
+      .feature {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(148, 163, 184, 0.12);
+        border-radius: 24px;
+        padding: 22px;
+      }
+      .feature h3 {
+        margin: 0 0 10px;
+        font-size: 1.1rem;
+        color: #f8fafc;
+      }
+      .feature p {
+        margin: 0;
+        color: #cbd5e1;
+        line-height: 1.7;
+        font-size: 0.98rem;
+      }
+      .footer {
+        margin-top: 40px;
+        color: #94a3b8;
+        font-size: 0.92rem;
+      }
+      @media (max-width: 640px) {
+        .card {
+          padding: 28px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="page">
+      <section class="card">
+        <h1>Borderless SATPREP</h1>
+        <p class="text-muted">A mobile-first SAT prep platform for the Borderless Club in Ethiopia. Practice with gamified challenges, AI tutoring, and Firebase-powered scoring.</p>
+        <div class="button-row">
+          <a class="button button-primary" href="/" target="_self">Open App</a>
+          <a class="button button-secondary" href="https://github.com/Borderless-Club-ETH/borderless-club-et.github.io" target="_blank">View GitHub</a>
+        </div>
+
+        <div class="features">
+          <div class="feature">
+            <h3>Firebase Auth & Firestore</h3>
+            <p>Secure login and cloud-based question tracking for students and coordinators.</p>
+          </div>
+          <div class="feature">
+            <h3>AI Tutoring</h3>
+            <p>Integrated Mintesnot AI helps explain answers and review student performance.</p>
+          </div>
+          <div class="feature">
+            <h3>Gamified Learning</h3>
+            <p>Leaderboards, scoring paths, and unique handles keep learners motivated.</p>
+          </div>
+        </div>
+
+        <p class="footer">This page is a lightweight landing experience for the Borderless SATPREP platform. Deploy as a GitHub Pages landing page or use Firebase Hosting for the full React app.</p>
+      </section>
+    </main>
+  </body>
+</html>

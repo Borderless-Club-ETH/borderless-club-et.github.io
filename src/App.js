@@ -2,8 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { auth, db } from './firebase/config';
 import { onAuthStateChanged } from 'firebase/auth';
-import { doc, getDoc } from 'firebase/firestore';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
 import CreateSATSet from './pages/CreateSATSet';
+import ProtectedRoute from './components/ProtectedRoute';
 import 'katex/dist/katex.min.css';
 
 // Layout
@@ -25,8 +26,28 @@ function App() {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       if (currentUser) {
-        const userDoc = await getDoc(doc(db, "users", currentUser.uid));
-        setUser(userDoc.exists() ? { ...currentUser, ...userDoc.data() } : currentUser);
+        const userRef = doc(db, "users", currentUser.uid);
+        const userDoc = await getDoc(userRef);
+
+        if (!userDoc.exists()) {
+          const normalizedEmail = currentUser.email?.toLowerCase() || '';
+          const newUserData = {
+            email: normalizedEmail,
+            displayName: currentUser.displayName || '',
+            photoURL: currentUser.photoURL || '',
+            canPostQuestions: false,
+            identityConfirmed: false,
+            totalCorrect: 0,
+            totalAttempted: 0,
+            averageAccuracy: 0,
+            streakCount: 0,
+            lastActivityDate: null
+          };
+          await setDoc(userRef, newUserData);
+          setUser({ ...currentUser, ...newUserData });
+        } else {
+          setUser({ ...currentUser, ...userDoc.data() });
+        }
       } else {
         setUser(null);
       }
@@ -56,7 +77,7 @@ function App() {
               <Route path="/leaderboard" element={user ? <Leaderboard /> : <Navigate to="/" />} />
               <Route path="/profile" element={user ? <Profile /> : <Navigate to="/" />} />
               <Route path="/create-question" element={user ? <CreateQuestion /> : <Navigate to="/" />} />
-              <Route path="/admin" element={user ? <AdminDashboard /> : <Navigate to="/" />} />
+              <Route path="/admin" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
               <Route path="/challenge" element={user ? (user.identityConfirmed !== false ? <QuestionChallenge /> : <Navigate to="/profile" />) : <Navigate to="/" />} />
               <Route path="/review/:resultId" element={user ? <ReviewSession /> : <Navigate to="/" />} />
               

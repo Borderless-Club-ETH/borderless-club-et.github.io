@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { db, auth } from '../firebase/config';
 import { collection, query, where, getDocs, doc, updateDoc, getDoc, setDoc } from 'firebase/firestore';
+import { isAuthorizedCoordinator } from '../utils/adminAuth.js';
 
 const AdminDashboard = () => {
   const [votedQuestions, setVotedQuestions] = useState([]);
@@ -45,7 +46,7 @@ const AdminDashboard = () => {
         const checkAuth = async () => {
           const docSnap = await getDoc(doc(db, "users", currentUser.uid));
           const data = docSnap.exists() ? docSnap.data() : null;
-          if ((data && data.canPostQuestions) || currentUser.email === "bamlakb.woldeyohannes@gmail.com") {
+          if (isAuthorizedCoordinator(currentUser, data)) {
             setIsAdmin(true);
             await fetchData();
           }
@@ -104,7 +105,14 @@ const AdminDashboard = () => {
       const snap = await getDocs(q);
 
       if (snap.empty) {
-        alert("No user found with that email. They must sign up for the website first!");
+        const placeholderDoc = doc(collection(db, "users"));
+        await setDoc(placeholderDoc, {
+          email: emailToSearch,
+          canPostQuestions: true,
+          preAuthorized: true,
+          createdAt: new Date()
+        });
+        alert(`Email ${emailToSearch} has been pre-authorized. The scholar can post once they sign in.`);
       } else {
         const userDocId = snap.docs[0].id;
         await updateDoc(doc(db, "users", userDocId), {

@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { db, auth } from '../firebase/config';
-import { collection, writeBatch, doc, getDoc } from 'firebase/firestore';
+import { collection, writeBatch, doc, getDoc, query, where, getDocs } from 'firebase/firestore';
 import { onAuthStateChanged } from 'firebase/auth';
 import { generateSATExplanation } from '../services/aiService.js';
+import { isAuthorizedCoordinator } from '../utils/adminAuth.js';
 
 const SAT_TAXONOMY = {
   "Reading & Writing": {
@@ -85,11 +86,18 @@ const CreateQuestionSet = () => {
       if (currentUser) {
         const fetchUserRole = async () => {
           const userDocRef = doc(db, "users", currentUser.uid);
-          const userDocSnap = await getDoc(userDocRef);
-          if (
-            (userDocSnap.exists() && userDocSnap.data().canPostQuestions) ||
-            currentUser.email === "bamlakb.woldeyohannes@gmail.com"
-          ) {
+          let userDocSnap = await getDoc(userDocRef);
+          let userData = userDocSnap.exists() ? userDocSnap.data() : null;
+
+          if (!userData && currentUser.email) {
+            const emailQuery = query(collection(db, "users"), where("email", "==", currentUser.email.toLowerCase()));
+            const emailSnap = await getDocs(emailQuery);
+            if (!emailSnap.empty) {
+              userData = emailSnap.docs[0].data();
+            }
+          }
+
+          if (isAuthorizedCoordinator(currentUser, userData)) {
             setCanPostQuestions(true);
           }
           setIsCheckingAuth(false);

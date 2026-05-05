@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { db, auth } from '../firebase/config'; 
 import { collection, writeBatch, doc } from 'firebase/firestore';
 import { onAuthStateChanged } from 'firebase/auth';
+import { AUTHORIZED_EMAILS } from '../utils/adminAuth.js';
 
 // This ensures the buttons match the database tags.
 // This array is commented out as it's not directly used in the current logic,
@@ -77,8 +78,8 @@ const CreateSATSet = () => {
     window.location.reload();
   };
 
-  // 🔒 Security Check: Only you (or your email) can see this page
-  if (!user || user.email !== "bamlakb.woldeyohannes@gmail.com") {
+  // 🔒 Security Check: Only authorized admin emails can see this page
+  if (!user || !AUTHORIZED_EMAILS.includes(user.email?.toLowerCase?.())) {
     return <div className="p-20 text-center font-bold">Access Denied. Please log in as an administrator.</div>;
   }
 

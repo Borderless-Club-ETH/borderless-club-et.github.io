@@ -2,8 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { auth } from '../../firebase/config';
 import { signOut } from 'firebase/auth';
-import { doc, onSnapshot } from 'firebase/firestore';
+import { collection, doc, onSnapshot, query, where, getDocs } from 'firebase/firestore';
 import { db } from '../../firebase/config';
+import { isAuthorizedCoordinator } from '../../utils/adminAuth.js';
 
 const Navbar = () => {
   const navigate = useNavigate();
@@ -13,12 +14,20 @@ const Navbar = () => {
     const unsubscribeAuth = auth.onAuthStateChanged(user => {
       if (user) {
         const userRef = doc(db, "users", user.uid);
-        const unsubscribeSnapshot = onSnapshot(userRef, (docSnap) => {
-          const data = docSnap.exists() ? docSnap.data() : null;
-          setIsAdmin(
-            (data && data.canPostQuestions === true) || 
-            (user.email && user.email.toLowerCase() === "bamlakb.woldeyohannes@gmail.com")
-          );
+        const unsubscribeSnapshot = onSnapshot(userRef, async (docSnap) => {
+          if (docSnap.exists()) {
+            setIsAdmin(isAuthorizedCoordinator(user, docSnap.data()));
+          } else if (user.email) {
+            const emailQuery = query(collection(db, 'users'), where('email', '==', user.email.toLowerCase()));
+            const emailSnap = await getDocs(emailQuery);
+            if (!emailSnap.empty) {
+              setIsAdmin(isAuthorizedCoordinator(user, emailSnap.docs[0].data()));
+            } else {
+              setIsAdmin(false);
+            }
+          } else {
+            setIsAdmin(false);
+          }
         });
         return () => unsubscribeSnapshot();
       } else {
